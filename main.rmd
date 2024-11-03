@@ -54,6 +54,53 @@ taylor_all_songs <- data$taylor_all_songs
 taylor_albums <- data$taylor_albums
 ```
 
+### (DEBUG) Pre-Cleaning (may or may not integrate into cleaning ltr)
+```{r}
+# quick data summary, a bit lengthy so I commented out for now
+# str(taylor_album_songs)
+# summary(taylor_album_songs)
+
+# str(taylor_all_songs)
+# summary(taylor_all_songs)
+
+# str(taylor_albums)
+# summary(taylor_albums)
+
+# checking if we need to actually drop NA
+sapply(taylor_album_songs, function(x) sum(is.na(x)))
+sapply(taylor_all_songs, function(x) sum(is.na(x)))
+sapply(taylor_albums, function(x) sum(is.na(x)))
+# we do need to drop NA values
+
+# checking if we need to unique / check dupe
+sum(duplicated(taylor_album_songs))
+sum(duplicated(taylor_all_songs))
+sum(duplicated(taylor_albums))
+# there are no duplicate values
+
+# as for the rest of the data, the columns are already properly 
+# named and the dates are already properly formatted. not much
+# cleaning needs to be done on this part actually
+
+### arr of var names tht we need to check for outliers
+variables_to_check <- c("danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration_ms")
+
+# just change "taylor_all_songs" to whatever u wanna check!
+outliers <- taylor_all_songs %>% 
+                  select(variables_to_check) %>% 
+                  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>% 
+  ggplot(aes(x = variable, y = value)) +
+  geom_boxplot() +
+  labs(title = "Box Plots of Numerical Variables in taylor_all_songs.csv ") +
+  theme_minimal() +
+  facet_wrap(~ variable, scales = "free") +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+
+outliers
+
+## seems there are indeed lots of outliers here and there, not sure whether or not to remove though.
+```
+
 ### Data Cleaning
 ```{r}
 
