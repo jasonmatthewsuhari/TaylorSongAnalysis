@@ -1,0 +1,39 @@
+---
+title: "Taylor Swift Song Analysis: What Makes Good and Bad Songs?"
+author: "Arvind Ramakrishnan, Jason Matthew Suhari, Jason Ray, Tay Jia Jun Jeremy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Introduction
+
+### Background
+
+This project analyzes Taylor Swift's song features to uncover what characteristics define a "good" or "bad" song, aiming to answer the question: "Which features make good and bad Taylor songs?" by using data from the taylor R package and Spotify's audio metrics.
+
+### Main Question
+
+Insert main question here
+
+### Sub-Questions
+1.) Insert sub-question #1 here
+
+2.) Insert sub-question #2 here
+
+3.) Insert sub-question #3 here
+
+## Data Parsing and Initialization
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, include = TRUE,
+                      fig.align = "center",  out.width = "80%")
+```
+
+### Library Imports
+```{r}
+library(ggplot2)
+library(dplyr)
+# add more here ltr
+```
+
+### 
