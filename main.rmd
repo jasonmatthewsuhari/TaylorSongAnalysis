@@ -91,7 +91,52 @@ df <- data$taylor_album_songs %>%
 
 ### Exploratory Data Analysis
 ```{r}
+glimpse(df)
 
+# looking at distribution of all data
+dist <- df %>% 
+  select(where(is.numeric)) %>% 
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  ggplot(aes(x = val)) +
+  geom_histogram(bins = 30) +
+  labs(title = "Distribution of All Numeric Variables") +
+  theme_bw() +
+  facet_wrap(~var, scales = "free") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+    )
+
+# finding outliers
+outliers <- df %>%
+  select(where(is.numeric)) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  ggplot(aes(x = var, y = val)) +
+  geom_boxplot() +
+  labs(title = "Boxplot for Potential Outliers in Taylor Swift's Songs") +
+  theme_bw() +
+  facet_wrap(~var, scales = "free") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+    )
+
+heatmap <- df %>%
+  select(where(is.numeric)) %>%
+  cor() %>%
+  as.data.frame() %>% 
+  rownames_to_column(var = "x") %>%
+  pivot_longer(cols = -x, names_to = "y", values_to = "value") %>%
+  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile(color = "black") +
+  labs(title = "Correlation Heatmap of Numerical Variables", x = "", y = "")
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1),
+    plot.title = element_text(hjust = 0.5)
+  ) 
 ```
 
 ### Question 1
