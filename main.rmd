@@ -65,3 +65,25 @@ df <- data$taylor_album_songs %>%
   left_join(taylor_albums, by = "album_name") 
 ```
 
+### Exploratory Data Analysis
+```{r}
+
+```
+
+### Question 1
+### Write question here
+```{r}
+
+```
+
+### Question 2
+### Write question here
+```{r}
+
+```
+
+### Question 3
+### Write question here
+```{r}
+
+```
