@@ -68,3 +68,12 @@ taylor_albums <- data$taylor_albums
 ## NEXT SECTION (CHANGE THIS HEADER)
 
 ### NEXT SECTION SUBSECTION (CHANGE THIS HEADER)
+
+###Q2
+taylor_albums %>% arrange(desc(metacritic_score),desc(user_score))
+
+top_two_album = c("Red (Taylor's Version)", "folklore")
+btm_two_album = c("reputation", "Taylor Swift")
+df_plot_2 <- df %>% select(album_name:tempo) %>% filter(album_name %in% top_two_album | album_name %in% btm_two_album) %>%
+  group_by(album_name) %>%
+  summarise(across(danceability:tempo, mean))
