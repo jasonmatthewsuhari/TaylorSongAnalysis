@@ -83,7 +83,7 @@ best_albums = c("folklore", "Red (Taylor's Version)")
 worst_albums = c("reputation", "Taylor Swift")
 
 qn2 = df %>%
-  select("album_name", "tempo") %>%
+  select("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo") %>%
   filter(album_name == best_albums[1]
          | album_name == best_albums[2]
          | album_name == worst_albums[1]
@@ -91,8 +91,8 @@ qn2 = df %>%
   group_by(album_name) %>%
   summarize(average = mean(tempo))
 
-ggplot(qn2, aes(x = album_name, y = average, fill = album_name)) +
-  geom_bar(stat = "identity") +
+ggplot(qn2, aes(x = album_name, y = average, color = album_name)) +
+  geom_point() +
   theme(
     legend.position = "none"
   ) 
