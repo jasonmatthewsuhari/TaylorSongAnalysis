@@ -78,7 +78,7 @@ library(lubridate)
 ### Data Ingestion & Cleaning
 ```{r}
 data <- tidytuesdayR::tt_load('2023-10-17')
-cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "valence", "tempo")
+cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo")
 
 taylor_albums <- data$taylor_albums
 
@@ -152,19 +152,30 @@ best_albums = c("folklore", "Red (Taylor's Version)")
 worst_albums = c("reputation", "Taylor Swift")
 
 qn2 = df %>%
-  select("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo") %>%
   filter(album_name == best_albums[1]
          | album_name == best_albums[2]
          | album_name == worst_albums[1]
          | album_name == worst_albums[2]) %>%
   group_by(album_name) %>%
-  summarize(average = mean(tempo))
+  summarize(danceability = mean(danceability), energy = mean(energy),
+            loudness_14_LUFS = mean(loudness) + 14, speechiness = mean(speechiness),
+            acousticness = mean(acousticness), liveness = mean(liveness),
+            valence = mean(valence), tempo = mean(tempo)) %>%
+  gather(key = "feature",
+         value = "mean_values",
+         danceability:tempo)
 
-ggplot(qn2, aes(x = album_name, y = average, color = album_name)) +
-  geom_point() +
+ggplot(qn2, aes(x = album_name, y = mean_values, fill = album_name)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ feature, scales = "free") + 
+  theme_minimal() +
   theme(
-    legend.position = "none"
-  ) 
+    axis.text.x = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  ggtitle( "Values of features from albums") +
+  scale_fill_viridis(discrete = TRUE)
 ```
 
 ### Question 3
