@@ -34,7 +34,6 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, include = TRUE,
 install.packages("ggplot2")
 install.packages("dplyr")
 install.packages("tidyverse")
-install.packages("taylor")
 install.packages("tidytuesdayR")
 ```
 
@@ -43,6 +42,7 @@ install.packages("tidytuesdayR")
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
+library(viridis)
 # add more here ltr
 ```
 
@@ -54,15 +54,40 @@ taylor_all_songs <- data$taylor_all_songs
 taylor_albums <- data$taylor_albums
 ```
 
-### Data Cleaning
+### Plot 1 - which albums are good and which songs are bad?
 ```{r}
+df1 <- drop_na(taylor_albums)
+
+#df1
+ggplot(df2) + 
+  geom_line(aes(x = album_release, y = metacritic_score), color = "gold") +
+  geom_line(aes(x = album_release, y = (user_score)*10), color = "blue") + 
+  labs(title = "Metacritic and User Score of Taylor Swift Albums", 
+       x = "Album Release Date", y = "Score (out of 100)")
+  
 
 ```
-
-### Basic EDA
+### Plot 1 - Using bar plot instead of line (This is the 2nd code chunk)
 ```{r}
-
+ggplot(df3) +
+  geom_col(aes(x = album_name, y = score, fill = score_type), position = "dodge") +
+  labs(title = "Metacritic and User Score of Taylor Swift Albums",
+       x = "Album Names", y = "Score (weighted out of 100)" ) +
+  scale_fill_viridis(option = "viridis", discrete = TRUE) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_text(aes(x = album_name, y = score, label = score), position = position_dodge(width = 0.9), vjust = -0.25)
 ```
+
+
+### This is the first code chunk
+```{r}
+df1 <- drop_na(taylor_albums)
+df2 <- df1[-c(2,4),]
+df2$user_score = df2$user_score * 10
+df3 <- df2 %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
+df3
+```
+
 
 
 ## NEXT SECTION (CHANGE THIS HEADER)
