@@ -3,18 +3,42 @@ title: "Taylor Swift Song Analysis: What Makes Good and Bad Songs?"
 author: "Arvind Ramakrishnan, Jason Matthew Suhari, Jason Ray, Tay Jia Jun Jeremy"
 date: "`r Sys.Date()`"
 output: html_document
-runtime: shiny
 ---
 
 ## Introduction
 
 ### Background
 
-This project analyzes Taylor Swift's song features to uncover what characteristics define a "good" or "bad" song, aiming to answer the question: "Which features make good and bad Taylor songs?" by using data from the taylor R package and Spotify's audio metrics.
+This project analyzes Taylor Swift's albums that were released up until 2023, with the latest being *1989 (Taylor's Version)*. 
+
+The [dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-17/readme.md) is sourced from [TidyTuesday](https://github.com/rfordatascience/tidytuesday), featuring the following key variables:
+
+1. **`album_name`**: Name of the album that a specific song belongs to
+
+2. **`danceability`**: A metric of how suitable a song is for dancing (0 - 1)
+
+3. **`energy`**: A metric of how intense and energetic a song is (0 - 1)
+
+4. **`loudness`**: Measure of loudness in decibels (dB)
+
+5. **`speechiness`**: A metric of how many words are spoken in a song (0 - 1)
+
+6. **`acousticness`**: A metric of whether or not a song is acoustic, meaning void of electric amplification (0 - 1)
+
+7. **`valence`**: A metric of how musically positive (i.e., happy, cheerful) a song is (0 - 1)
+
+8. **`tempo`**: The overall estimated tempo of the track, measured in BPM
+
+9. **`album_release`**: The release date of the album, meaning some songs will have the same value for this column
+
+10. **`metacritic_score`**: A score out of 100 that represents the average critical rating for the entire album, meaning some songs will have the same value for this column
+
+11. **`user_score`**: A score out of 100 that represents the average user rating for the entire album, meaning some songs will have the same value for this column
+
 
 ### Main Question
 
-Insert main question here
+**What makes a good or bad Taylor Swift album?**
 
 ### Sub-Questions
 1.) Insert sub-question #1 here
@@ -32,12 +56,12 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, include = TRUE,
 
 ### (DEBUG) Package Installations (For members only, to remove later)
 ```{r}
-install.packages("ggplot2")
-install.packages("dplyr")
-install.packages("tidyverse")
-install.packages("taylor")
-install.packages("tidytuesdayR")
-install.packages("viridis")
+# install.packages("ggplot2")
+# install.packages("dplyr")
+# install.packages("tidyverse")
+# install.packages("taylor")
+# install.packages("tidytuesdayR")
+# install.packages("viridis")
 ```
 
 ### Library Imports
@@ -54,20 +78,65 @@ library(lubridate)
 ### Data Ingestion & Cleaning
 ```{r}
 data <- tidytuesdayR::tt_load('2023-10-17')
-cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo")
+cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "valence", "tempo")
 
-taylor_albums <- data$taylor_albums %>% 
-  select(-ep)
+taylor_albums <- data$taylor_albums
 
 df <- data$taylor_album_songs %>% 
   select(all_of(cols_to_select)) %>% 
   drop_na() %>% 
-  left_join(taylor_albums, by = "album_name") 
+  left_join(taylor_albums, by = "album_name") %>% 
+  select(-c("ep"))
 ```
 
 ### Exploratory Data Analysis
 ```{r}
+glimpse(df)
 
+# looking at distribution of all data
+dist <- df %>% 
+  select(where(is.numeric)) %>% 
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  ggplot(aes(x = val)) +
+  geom_histogram(bins = 30) +
+  labs(title = "Distribution of All Numeric Variables") +
+  theme_bw() +
+  facet_wrap(~var, scales = "free") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+    )
+
+# finding outliers
+outliers <- df %>%
+  select(where(is.numeric)) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  ggplot(aes(x = var, y = val)) +
+  geom_boxplot() +
+  labs(title = "Boxplot for Potential Outliers in Taylor Swift's Songs") +
+  theme_bw() +
+  facet_wrap(~var, scales = "free") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+    )
+
+heatmap <- df %>%
+  select(where(is.numeric)) %>%
+  cor() %>%
+  as.data.frame() %>% 
+  rownames_to_column(var = "x") %>%
+  pivot_longer(cols = -x, names_to = "y", values_to = "value") %>%
+  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile(color = "black") +
+  labs(title = "Correlation Heatmap of Numerical Variables", x = "", y = "")
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1),
+    plot.title = element_text(hjust = 0.5)
+  ) 
 ```
 
 ### Question 1
@@ -99,7 +168,30 @@ ggplot(qn2, aes(x = album_name, y = average, color = album_name)) +
 ```
 
 ### Question 3
-### Write question here
+Density plot that visualizes the distribution of energy in albums from the Top 2 Albums (based on metacritic and user scores) and a specific album (in this case, Taylor Swift)
 ```{r}
+top_2_albums <- c("Red (Taylor's Version)", "folklore")
 
+best_album_data <- df %>%
+  filter(album_name %in% top_2_albums) %>%
+  mutate(label = "Top 2 Albums")
+
+album_to_compare <- "1989"
+selected_album_data <- df %>%
+  filter(album_name == album_to_compare) %>%
+  mutate(label = album_to_compare)
+
+data_to_plot <- bind_rows(best_album_data, selected_album_data)
+
+ggplot(data_to_plot, 
+       aes(x = energy, fill = label, color = label)) +
+  geom_density(alpha = 0.5) +
+  labs(title = paste("Energy Distribution of Top 2 Albums VS", album_to_compare, "Album"),
+       x = "Energy",
+       y = "Density") +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+    )
 ```
