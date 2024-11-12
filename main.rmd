@@ -171,25 +171,29 @@ We will use only the `taylor_albums` dataset for this part and as a part of the 
 
 1. we will remove the rows with missing values
 
-2. we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
+2. we remove the albums "Fearless" and "Red" from this data and this analysis due to the fact that these albums are not present in the `taylor_album_songs` dataset, which will be used in for visualizations and analysis in subsequent sections
 
-3. we will use the `pivot_longer` function to tidy the `df` dataframe into a longer format, since in the original `taylor_albums` dataset, the column headers of the variables `metacritic_score` and `user_score` are actually values that we would like to use in this bar plot visualization to distinctly illustrate the metacritic and user scores separately. We create the new variables `score_type` and `score` to store the type (metacritic or user) of score and the value of the score (weighted out of 100) respectively
+3. we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
+
+4. we will use the `pivot_longer` function to tidy the `df` dataframe into a longer format, since in the original `taylor_albums` dataset, the column headers of the variables `metacritic_score` and `user_score` are actually values that we would like to use in this bar plot visualization to distinctly illustrate the metacritic and user scores separately. We create the new variables `score_type` and `score` to store the type (metacritic or user) of score and the value of the score (weighted out of 100) respectively
 
 ```{r}
-# create a dataframe df to use for the visualization and analysis in this section
-df <- drop_na(taylor_albums)
+# create a dataframe df_plot1 to use for the visualization and analysis in this section
+df_plot1 <- drop_na(taylor_albums)
+# remove the albums "Fearless" and "Red"
+df_plot1 <- df_plot1 %>% filter(!((album_name == "Fearless")|(album_name == "Red")))
 # scale the user scores to be weighted out of 100
-df$user_score <- df$user_score * 10
+df_plot1$user_score <- df_plot1$user_score * 10
 # tidy the data
-df <- df %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
-df
+df_plot1 <- df_plot1 %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
+df_plot1
 
 ```
 
 **Part 2: Bar Plot**
 Using the fully transformed and cleaned version of the `taylor_albums` dataset which is now stored in the dataframe `df`, we now plot the bar chart using the `geom_col` function
 ```{r}
-ggplot(df) +
+ggplot(df_plot1) +
   geom_col(aes(x = album_name, y = score, fill = score_type), position = "dodge") +
   labs(title = "Metacritic and User Score of Taylor Swift Albums",
        x = "Album Names",
