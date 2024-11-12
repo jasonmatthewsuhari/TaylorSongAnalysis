@@ -83,7 +83,7 @@ ggplot(df_plot2, aes(x = album_name, y = score, color = album_name)) +
   facet_wrap(~ features, scales = "free") + 
   theme(axis.text.x = element_blank()) +
   theme_minimal() +
-  labs(title = "Characteristics of Taylor's Top and Bottom 2 Albums Based on User Scores", 
+  labs(title = "Characteristics of Taylor's Top and Bottom 2 Albums", 
       x = "", 
       y = "Score", 
       color = "Album")
