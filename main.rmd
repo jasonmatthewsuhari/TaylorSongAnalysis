@@ -139,7 +139,7 @@ heatmap <- df %>%
   ) 
 ```
 
-### Visualization 1
+### Visualization 1 (Line Chart Version)
 *Line chart that plots the metacritic score as well as user score of each Taylor Swift album in the y axis against the album release date on the X axis*
 
 **Part 1 : Data Transformation**
@@ -163,7 +163,44 @@ ggplot(df) +
        x = "Album Release Date", y = "Score (out of 100)") 
   
 ```
+### Visualization 1 (Bar Plot Version)
+*Bar graph that plots the values of metacritic score and user score of each taylor swift album*
 
+**Part 1: Data Transformation** 
+We will use only the `taylor_albums` dataset for this part and as a part of the data transformation we will perform the following data transformation and cleaning steps:
+
+1. we will remove the rows with missing values
+
+2. we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
+
+3. we will use the `pivot_longer` function to tidy the `df` dataframe into a longer format, since in the original `taylor_albums` dataset, the column headers of the variables `metacritic_score` and `user_score` are actually values that we would like to use in this bar plot visualization to distinctly illustrate the metacritic and user scores separately. We create the new variables `score_type` and `score` to store the type (metacritic or user) of score and the value of the score (weighted out of 100) respectively
+
+```{r}
+# create a dataframe df to use for the visualization and analysis in this section
+df <- drop_na(taylor_albums)
+# scale the user scores to be weighted out of 100
+df$user_score <- df$user_score * 10
+# tidy the data
+df <- df %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
+df
+
+```
+
+**Part 2: Bar Plot**
+Using the fully transformed and cleaned version of the `taylor_albums` dataset which is now stored in the dataframe `df`, we now plot the bar chart using the `geom_col` function
+```{r}
+ggplot(df) +
+  geom_col(aes(x = album_name, y = score, fill = score_type), position = "dodge") +
+  labs(title = "Metacritic and User Score of Taylor Swift Albums",
+       x = "Album Names",
+       y = "Score (weighted out of 100)" ) +
+  scale_fill_viridis(option = "viridis", discrete = TRUE) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_text(aes(x = album_name, y = score, label = score), 
+            position = position_dodge(width = 0.9),
+            vjust = -0.25)
+```
+**Part 3: Insights from Visualization 1**
 
 ### Question 2
 ### Write question here
@@ -199,4 +236,3 @@ ggplot(data_to_plot,
     legend.position = "bottom"
     )
 ```
-
