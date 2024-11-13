@@ -75,16 +75,16 @@ taylor_albums %>% arrange(desc(metacritic_score),desc(user_score))
 top_two_album = c("Red (Taylor's Version)", "folklore")
 btm_two_album = c("reputation", "Taylor Swift")
 
-df_plot2 <- df_test %>% pivot_longer(cols= danceability:tempo, names_to = "features", values_to = "score") %>% mutate(features = str_to_title(features), album_name = str_to_title(album_name))
+df_plot2 <- df %>% select(album_name:tempo, user_score) %>% 
+  filter(album_name %in% top_two_album | album_name %in% btm_two_album) %>%
+  pivot_longer(cols= danceability:tempo, names_to = "features", values_to = "score") %>% 
+  mutate(features = str_to_title(features), album_name = str_to_title(album_name))
 
 ggplot(df_plot2, aes(x = album_name, y = score, color = album_name)) +
   geom_point(size = 2, alpha = 0.5) + 
-  scale_fill_viridis() +
+  scale_fill_viridis(option = "viridis", discrete = TRUE) +
   facet_wrap(~ features, scales = "free") + 
   theme(axis.text.x = element_blank()) +
-  theme_minimal() +
-  labs(title = "Characteristics of Taylor's Top and Bottom 2 Albums", 
-      x = "", 
-      y = "Score", 
-      color = "Album")
+  labs(title = "Characteristics of Taylor's Top and Bottom 2 Albums Based on User Scores", x = "", y = "Score", color = "Album")
+
 
