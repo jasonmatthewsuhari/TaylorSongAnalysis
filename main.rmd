@@ -243,6 +243,10 @@ ggplot(df_plot2, aes(x = album_name, y = score, color = album_name)) +
 
 **Part 2: Insights from Visualization 2**
 
+It can be seen that the four albums sometimes display noticeable features in the variables that sets it apart from the others, while other times there does not seem to be a clear difference between them. For example, Taylor's Swift's best album, 'Folklore', has considerably higher acousticness in general compared to the others. We can also notice that the 2 worst albums is generaly louder and has more energy than the 2 best albums. However, there does not seem to be any noticeable difference in tempo distribution among the songs in each of the four albums.
+
+This shows that while some variables has a visible correlation to whether an album is perceived as good or bad, there are also other variables that might not have any effect on them.
+
 
 ### Visualization 2 (Ray's Version)
 
@@ -280,9 +284,6 @@ ggplot(qn2, aes(x = album_name, y = mean_values, fill = album_name)) +
 
 **Part 2: Insights from Visualization 2**
 
-It can be seen that the four albums sometimes display noticeable features in the variables that sets it apart from the others, while other times there does not seem to be a clear difference between them. For example, Taylor's Swift's best album, 'Folklore', has considerably higher acousticness in general compared to the others. We can also notice that the 2 worst albums is generaly louder and has more energy than the 2 best albums. However, there does not seem to be any noticeable difference in tempo distribution among the songs in each of the four albums.
-
-This shows that while some variables has a visible correlation to whether an album is perceived as good or bad, there are also other variables that might not have any effect on them.
 
 ## Section 3
 
