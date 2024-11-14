@@ -95,7 +95,7 @@ df <- data$taylor_album_songs %>%
 
 ### Exploratory Data Analysis
 This portion comprises the exploratory data analysis that computes key summary statistics to ascertain the key characteristics and features of the dataset stored in `df`. 
-```{r}
+```{r, results = "hide"}
 glimpse(df)
 
 # looking at distribution of all data
@@ -248,43 +248,6 @@ It can be seen that the four albums sometimes display noticeable features in the
 This shows that while some variables has a visible correlation to whether an album is perceived as good or bad, there are also other variables that might not have any effect on them.
 
 
-### Visualization 2 (Ray's Version)
-
-**Part 1: Bar Plot**
-```{r}
-best_albums = c("folklore", "Red (Taylor's Version)")
-worst_albums = c("reputation", "Taylor Swift")
-
-qn2 = df %>%
-  filter(album_name == best_albums[1]
-         | album_name == best_albums[2]
-         | album_name == worst_albums[1]
-         | album_name == worst_albums[2]) %>%
-  group_by(album_name) %>%
-  summarize(danceability = mean(danceability), energy = mean(energy),
-            loudness_14_LUFS = mean(loudness) + 14, speechiness = mean(speechiness),
-            acousticness = mean(acousticness), liveness = mean(liveness),
-            valence = mean(valence), tempo = mean(tempo)) %>%
-  gather(key = "feature",
-         value = "mean_values",
-         danceability:tempo)
-
-ggplot(qn2, aes(x = album_name, y = mean_values, fill = album_name)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ feature, scales = "free") + 
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  ) +
-  ggtitle( "Values of features from albums") +
-  scale_fill_viridis(discrete = TRUE)
-```
-
-**Part 2: Insights from Visualization 2**
-
-
 ## Section 3
 
 ### Visualization 3: 
@@ -316,6 +279,7 @@ ggplot(data_to_plot,
     legend.position = "bottom"
     )
 ```
-This graphs shows the distribution of `valence` across the top two best albums (turquoise) and the other albums (red). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
 
 **Part 2: Insights from Visualization 3**
+
+This graphs shows the distribution of `valence` across the top two best albums (turquoise) and the other albums (red). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
