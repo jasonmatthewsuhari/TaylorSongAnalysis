@@ -298,24 +298,24 @@ best_album_data <- df %>%
   filter(album_name %in% top_2_albums) %>%
   mutate(label = "Top 2 Albums")
 
-album_to_compare <- "1989"
-selected_album_data <- df %>%
-  filter(album_name == album_to_compare) %>%
-  mutate(label = album_to_compare)
+other_album_data <- df %>%
+  filter(!(album_name %in% top_2_albums)) %>%
+  mutate(label = "All Other Albums")
 
-data_to_plot <- bind_rows(best_album_data, selected_album_data)
+data_to_plot <- bind_rows(best_album_data, other_album_data)
 
 ggplot(data_to_plot, 
-       aes(x = energy, fill = label, color = label)) +
+       aes(x = valence, fill = label, color = label)) +
   geom_density(alpha = 0.5) +
-  labs(title = paste("Energy Distribution of Top 2 Albums VS", album_to_compare, "Album"),
-       x = "Energy",
-       y = "Density") +
+  labs(title = paste("Valence Distribution of Top 2 Albums VS Other Albums"),
+       x = "Valence",
+       y = "Density (Across Album)") +
   theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5),
     legend.position = "bottom"
     )
 ```
+This graphs shows the distribution of `valence` across the top two best albums (turquoise) and the other albums (red). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
 
 **Part 2: Insights from Visualization 3**
