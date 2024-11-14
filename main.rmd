@@ -38,11 +38,7 @@ The [dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/20
 
 ### Main Question
 
-<<<<<<< HEAD
-**What makes a good or bad Taylor Swift album?**
-=======
 **What are the key differences, in terms of musical features, between the songs of a highly rated album and relatively lower rated album of Taylor Swift?**
->>>>>>> Arvind
 
 ### Sub-Questions
 1.) How does the metacritic score and user score differ for each Taylor Swift album and what are the good and bad albums?
@@ -80,11 +76,6 @@ library(lubridate)
 ```
 
 ### Data Ingestion & Cleaning
-<<<<<<< HEAD
-```{r}
-data <- tidytuesdayR::tt_load('2023-10-17')
-cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo")
-=======
 
 The main Taylor Swift datasets that we will be using in our data analysis are the `taylor_albums` and `taylor_album_songs` datasets. We will be omitting the `taylor_all_songs` dataset from the scope of our project since the key variables that we intend to use for our visualizations and analysis are contained in the `taylor_album_songs` and these variables are also repeated in the `taylor_all_songs` dataset and therefore is redundant to the primary objective of our data analysis. **Section 1** which entails **Visualization 1** will only utilize the `taylor_albums` dataset, whereas the `taylor_album_songs` left joined with the `taylor_albums` dataset will be used for anaylsis in **Section 2** and **Section 3** and their visualizations respectively.
 
@@ -93,7 +84,6 @@ The transformation and cleaning for `taylor_albums` dataset will be done in **Se
 ```{r}
 data <- tidytuesdayR::tt_load('2023-10-17')
 cols_to_select <- c("album_name", "danceability", "energy", "loudness", "speechiness", "acousticness", "valence", "tempo")
->>>>>>> Arvind
 
 taylor_albums <- data$taylor_albums
 
@@ -105,61 +95,7 @@ df <- data$taylor_album_songs %>%
 ```
 
 ### Exploratory Data Analysis
-<<<<<<< HEAD
-```{r}
-glimpse(df)
-
-# looking at distribution of all data
-dist <- df %>% 
-  select(where(is.numeric)) %>% 
-  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
-  ggplot(aes(x = val)) +
-  geom_histogram(bins = 30) +
-  labs(title = "Distribution of All Numeric Variables") +
-  theme_bw() +
-  facet_wrap(~var, scales = "free") +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-    )
-
-# finding outliers
-outliers <- df %>%
-  select(where(is.numeric)) %>%
-  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
-  ggplot(aes(x = var, y = val)) +
-  geom_boxplot() +
-  labs(title = "Boxplot for Potential Outliers in Taylor Swift's Songs") +
-  theme_bw() +
-  facet_wrap(~var, scales = "free") +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-    )
-
-heatmap <- df %>%
-  select(where(is.numeric)) %>%
-  cor() %>%
-  as.data.frame() %>% 
-  rownames_to_column(var = "x") %>%
-  pivot_longer(cols = -x, names_to = "y", values_to = "value") %>%
-  ggplot(aes(x = x, y = y, fill = value)) +
-  geom_tile(color = "black") +
-  labs(title = "Correlation Heatmap of Numerical Variables", x = "", y = "")
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1),
-    plot.title = element_text(hjust = 0.5)
-  ) 
-```
-
-### Question 1
-### Write question here
-=======
 This portion comprises the exploratory data analysis that computes key summary statistics to ascertain the key characteristics and features of the dataset stored in `df`. 
->>>>>>> Arvind
 ```{r}
 glimpse(df)
 
@@ -209,13 +145,6 @@ heatmap <- df %>%
   ) 
 ```
 
-<<<<<<< HEAD
-### Question 2
-### Write question here
-```{r}
-best_albums = c("folklore", "Red (Taylor's Version)")
-worst_albums = c("reputation", "Taylor Swift")
-=======
 ## Section 1
 
 ### Visualization 1 (Line Chart Version)
@@ -231,46 +160,9 @@ df_line <- drop_na(taylor_albums)
 df_line$user_score <- df_line$user_score * 10
 df_line
 
->>>>>>> Arvind
 
-qn2 = df %>%
-  filter(album_name == best_albums[1]
-         | album_name == best_albums[2]
-         | album_name == worst_albums[1]
-         | album_name == worst_albums[2]) %>%
-  group_by(album_name) %>%
-  summarize(danceability = mean(danceability), energy = mean(energy),
-            loudness_14_LUFS = mean(loudness) + 14, speechiness = mean(speechiness),
-            acousticness = mean(acousticness), liveness = mean(liveness),
-            valence = mean(valence), tempo = mean(tempo)) %>%
-  gather(key = "feature",
-         value = "mean_values",
-         danceability:tempo)
-
-ggplot(qn2, aes(x = album_name, y = mean_values, fill = album_name)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ feature, scales = "free") + 
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  ) +
-  ggtitle( "Values of features from albums") +
-  scale_fill_viridis(discrete = TRUE)
 ```
 
-<<<<<<< HEAD
-### Question 3
-Density plot that visualizes the distribution of energy in albums from the Top 2 Albums (based on metacritic and user scores) and a specific album (in this case, Taylor Swift)
-```{r}
-top_2_albums <- c("Red (Taylor's Version)", "folklore")
-
-best_album_data <- df %>%
-  filter(album_name %in% top_2_albums) %>%
-  mutate(label = "Top 2 Albums")
-
-=======
 **Part 2 : Line Chart**
 
 Using the transformed data above that is stored in the dataframe `df`, we now plot the line chart 
@@ -377,7 +269,6 @@ best_album_data <- df %>%
   filter(album_name %in% top_2_albums) %>%
   mutate(label = "Top 2 Albums")
 
->>>>>>> Arvind
 album_to_compare <- "1989"
 selected_album_data <- df %>%
   filter(album_name == album_to_compare) %>%
@@ -397,8 +288,5 @@ ggplot(data_to_plot,
     legend.position = "bottom"
     )
 ```
-<<<<<<< HEAD
-=======
 
 **Part 2: Insights from Visualization 3**
->>>>>>> Arvind
