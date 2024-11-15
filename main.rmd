@@ -1,6 +1,6 @@
 ---
-title: "Taylor Swift Song Analysis: What Makes Good and Bad Songs?"
-author: "Arvind Ramakrishnan, Jason Matthew Suhari, Jason Ray, Tay Jia Jun Jeremy"
+title: "Taylor Swift Song Analysis: What Makes An Album Good Or Bad, Based On The Features Of Their Songs?"
+author: "Arvind Ramakrishnan (A0253523L), Jason Matthew Suhari (A0286652U), Jason Ray, Tay Jia Jun Jeremy"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -54,16 +54,6 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, include = TRUE,
                       fig.align = "center",  out.width = "80%")
 ```
 
-### (DEBUG) Package Installations (For members only, to remove later)
-```{r}
-# install.packages("ggplot2")
-# install.packages("dplyr")
-# install.packages("tidyverse")
-# install.packages("taylor")
-# install.packages("tidytuesdayR")
-# install.packages("viridis")
-```
-
 ### Library Imports
 ```{r}
 library(ggplot2)
@@ -72,13 +62,28 @@ library(taylor)
 library(tidyverse)
 library(viridis)
 library(lubridate)
-# add more here ltr
 ```
 
 ### Data Ingestion & Cleaning
 The main Taylor Swift datasets that we will be using in our data analysis are the `taylor_albums` and `taylor_album_songs` datasets. We will be omitting the `taylor_all_songs` dataset from the scope of our project since the key variables that we intend to use for our visualizations and analysis are contained in the `taylor_album_songs` and these variables are also repeated in the `taylor_all_songs` dataset and therefore is redundant to the primary objective of our data analysis. **Section 1** which entails **Visualization 1** will only utilize the `taylor_albums` dataset, whereas the `taylor_album_songs` left joined with the `taylor_albums` dataset will be used for anaylsis in **Section 2** and **Section 3** and their visualizations respectively.
 
-The transformation and cleaning for `taylor_albums` dataset will be done in **Section 1** itself. In this part, we first transform and clean the `taylor_album_songs` dataset by first selecting and keeping only the `album_name`, `danceability`, `energy`, `loudness`, `speechiness`, `acousticness`, `valence` and `tempo` variables and drop the rest as there are the variables of interest that will be used for the analysis in **Section 2** and **Section 3**. Secondly, we remove all the rows with missing values and finally we join the two datasets together using a left join so that each song in the `taylor_album_songs` dataset can be associated/linked to its respective album names from `taylor_albums`, which faciliates a meaningful analysis. We store this transformed and cleaned version of the `taylor_album_songs` dataset joined with the `taylor_albums` dataset in a dataframe object called `df` which is the main data object that will be used in **Section 2** and **Section 3**.
+The first part is the transformation and cleaning of `taylor_albums` dataset which will be used in **Section 1** and as a part of the data transformation and cleaning we first remove the rows with missing values. Then we remove the albums "Fearless" and "Red" from this data and the analysis in **Section 1** due to the fact that these albums are not present in the `taylor_album_songs` dataset, which will be used in for visualizations and analysis in subsequent sections. Subsequently, we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
+Finally, we will use the `pivot_longer` function to tidy the `df_plot1` dataframe into a longer format, since in the original `taylor_albums` dataset, the column headers of the variables `metacritic_score` and `user_score` are actually values that we would like to use in this bar plot visualization to distinctly illustrate the metacritic and user scores separately. We create the new variables `score_type` and `score` to store the type (metacritic or user) of score and the value of the score (weighted out of 100) respectively
+
+```{r}
+# create a dataframe df_plot1 to use for the visualization and analysis in this section
+df_plot1 <- drop_na(taylor_albums)
+# remove the albums "Fearless" and "Red"
+df_plot1 <- df_plot1 %>% filter(!((album_name == "Fearless")|(album_name == "Red")))
+# scale the user scores to be weighted out of 100
+df_plot1$user_score <- df_plot1$user_score * 10
+# tidy the data
+df_plot1 <- df_plot1 %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
+df_plot1
+```
+
+
+In this part, we first transform and clean the `taylor_album_songs` dataset by first selecting and keeping only the `album_name`, `danceability`, `energy`, `loudness`, `speechiness`, `acousticness`, `valence` and `tempo` variables and drop the rest as there are the variables of interest that will be used for the analysis in **Section 2** and **Section 3**. Secondly, we remove all the rows with missing values and finally we join the two datasets together using a left join so that each song in the `taylor_album_songs` dataset can be associated/linked to its respective album names from `taylor_albums`, which faciliates a meaningful analysis. We store this transformed and cleaned version of the `taylor_album_songs` dataset joined with the `taylor_albums` dataset in a dataframe object called `df` which is the main data object that will be used in **Section 2** and **Section 3**.
 
 ```{r}
 data <- tidytuesdayR::tt_load('2023-10-17')
@@ -95,7 +100,7 @@ df <- data$taylor_album_songs %>%
 
 ### Exploratory Data Analysis
 This portion comprises the exploratory data analysis that computes key summary statistics to ascertain the key characteristics and features of the dataset stored in `df`. 
-```{r}
+```{r, results = "hide"}
 glimpse(df)
 
 # looking at distribution of all data
@@ -146,62 +151,14 @@ heatmap <- df %>%
 
 ## Section 1
 
-### Visualization 1 (Line Chart Version)
-*Line chart that plots the metacritic score as well as user score of each Taylor Swift album in the y axis against the album release date on the X axis*
+### Visualization 1
+*Bar chart that plots the values of metacritic score and user score of each taylor swift album*
 
-**Part 1 : Data Transformation**
-We will use only the `taylor_albums` dataset for this part and will remove the rows with missing values. Additionally we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
-```{r}
-# create a dataframe df to use for plots and analysis in this section 
-df_line <- drop_na(taylor_albums)
-# scale the user_score variable
-df_line$user_score <- df_line$user_score * 10
-df_line
-
-
-```
-**Part 2 : Line Chart**
-Using the transformed data above that is stored in the dataframe `df`, we now plot the line chart 
-```{r}
-ggplot(df_line) + 
-  geom_line(aes(x = album_release, y = metacritic_score), color = "blue", size = 2) + 
-  geom_line(aes(x = album_release, y = user_score), color = "gold", size = 2) + 
-  labs(title = "Metacritic and User Score of Taylor Swift Albums", 
-       x = "Album Release Date", y = "Score (out of 100)") 
-  
-```
-### Visualization 1 (Bar Plot Version)
-Bar graph that plots the values of metacritic score and user score of each taylor swift album
-
-**Part 1: Data Transformation** 
-We will use only the `taylor_albums` dataset for this part and as a part of the data transformation and cleaning we will perform the following steps:
-
-1. we will remove the rows with missing values
-
-2. we remove the albums "Fearless" and "Red" from this data and this analysis due to the fact that these albums are not present in the `taylor_album_songs` dataset, which will be used in for visualizations and analysis in subsequent sections
-
-3. we will scale the user scores to be weighted out of 100 by multiplying the `user_score` variable by 10 (as it is originally weighted on a scale of 1-10)
-
-4. we will use the `pivot_longer` function to tidy the `df` dataframe into a longer format, since in the original `taylor_albums` dataset, the column headers of the variables `metacritic_score` and `user_score` are actually values that we would like to use in this bar plot visualization to distinctly illustrate the metacritic and user scores separately. We create the new variables `score_type` and `score` to store the type (metacritic or user) of score and the value of the score (weighted out of 100) respectively
-
-```{r}
-# create a dataframe df_plot1 to use for the visualization and analysis in this section
-df_plot1 <- drop_na(taylor_albums)
-# remove the albums "Fearless" and "Red"
-df_plot1 <- df_plot1 %>% filter(!((album_name == "Fearless")|(album_name == "Red")))
-# scale the user scores to be weighted out of 100
-df_plot1$user_score <- df_plot1$user_score * 10
-# tidy the data
-df_plot1 <- df_plot1 %>% pivot_longer(`metacritic_score`:`user_score`, names_to = "score_type", values_to = "score")
-df_plot1
-
-```
-
-**Part 2: Bar Plot**
+**Part 1: Bar Plot**
 Using the fully transformed and cleaned version of the `taylor_albums` dataset which is now stored in the dataframe `df_plot1`, we now plot the bar chart using the `geom_col` function. For this visualization we use the variables `album_names`, `score` and `score_type`. The rationale behind choosing a bar plot for this visualization is that it allows our readers to not only view the metacritic and user scores of each albums more vividly, but it also enables them to compare these scores side by side in an easier and comprehensible manner due to the presence of distinct bars for both the metacritic and user score of each album respectively.This will facilitate the readers to ascertain which albums will be used in the subsequent sections. 
 ```{r}
-ggplot(df_plot1) +
-  geom_col(aes(x = album_name, y = score, fill = score_type), position = "dodge") +
+ggplot(df_plot1, aes(album_name, y = score, fill = score_type)) +
+  geom_col(position = "dodge") +
   labs(title = "Metacritic and User Score of Taylor Swift Albums",
        x = "Album Names",
        y = "Score (weighted out of 100)" ) +
@@ -211,15 +168,19 @@ ggplot(df_plot1) +
             position = position_dodge(width = 0.9),
             vjust = -0.25)
 ```
-**Part 3: Insights from Visualization 1**
+
+**Part 2: Insights from Visualization 1**
+From the plot above, it is possible to infer that "Red (Taylor's Version)" and "folklore" have the two highest ratings, with an user score of 90 each and they also have the highest combined user + metacritic score with a combined total of 180 and 178 respectively. Therefore "Red (Taylor's Version)" and "folklore" are the 2 albums that we select for the 2 highest rated albums for subsequent analysis in the next section. Similarly, from the plot above it  can be inferred that "reputation" and "Taylor Swift" have the two lowest ratings, with an user score of 83 and 85 and they also have the lowest combined user + metacritic score with a combined total of 154 and 152 respectively. Therefore "Taylor Swift" and "reputation" are the 2 albums that we select for the 2 lowest rated albums for subsequent analysis in the next section.
+
+As for the summary of the overall patterns from this analysis and visualization, it can be inferred and concluded that the difference between the heights of the yellow bars are minimal which is indicative of the fact that almost all of Taylor Swift's albums are rated highly by the users with the lowest user score being 82 and the highest user score being 90. Whereas the purple bars which represent the metacritic scores are appear generally the same but there are some noticeable differences in their size due to the fact that some albums have received a metacritic score below 80 which are relatively low in comparision to the higher rated albums. For example the highest metacritic score is 91 whereas the lowest metacritic score is 67 which signals a significant discrepany from the user scores which are vastly identical.
 
 ## Section 2
 
-### Visualization 2 (Jeremy's Version)
-Scatter chart that plots the numerical values of the features of each song in 4 different Taylor Swift albums- the 2 highest rated albums and the 2 lowest rated albums.
+### Visualization 2
+*Scatter chart that plots the numerical values of the features of each song in 4 different Taylor Swift albums- the 2 highest rated albums and the 2 lowest rated albums*
 
 **Part 1: Scatter Plot**
-Using the fully transformed and cleaned version of the `taylor_album_songs` dataset joined with `taylor_albums` dataset which is now stored in the dataframe `df`, we now plot the scatter chart using the `geom_point` function. For this visualization we use the variables `acousticness`, `danceability`, `energy`, `liveness`, `loudness`, `speechiness`, `tempo` and `valence` and compare these song features across the 4 chosen albums 
+Using the fully transformed and cleaned version of the `taylor_album_songs` dataset joined with `taylor_albums` dataset which is now stored in the dataframe `df`, we now plot the scatter chart using the `geom_point` function. For this visualization we use the variables `acousticness`, `danceability`, `energy`, `liveness`, `loudness`, `speechiness`, `tempo` and `valence` and compare these song features across the 4 chosen albums. To ease the illustration of these features, we first create use the `pivot_longer` function to convert the names of the aforementioned features into values and store them in a variable named `features` and the actual numerical values of these features are stored in a new variable named `score`. This is stored in a new dataframe called `df_plot2` and ultimately the variables that we will use directly for this visualization are `album_name`, `score` and `features`. The primary rationale behind using a scatter plot for this visualization is that it allows us to individually visualize the numeric values of the song features for each song, for all the 8 chosen features (each point in the plot is a song). As opposed to other types of plots/graphs, where we would have to average out the numerical values of all these features across all the songs in an album and plot only the average values of these features in each album, using the `geom_point` scatter plot visualization enables us to represent each song and their values of the 8 features as a separate point. This facilitates a more meaningful and insightful analysis and better answers the main question of interest since this plot illustrates the features of each and every song from the best 2 and worst 2 albums.
 ```{r}
 taylor_albums %>% arrange(desc(metacritic_score),desc(user_score))
 
@@ -242,50 +203,18 @@ ggplot(df_plot2, aes(x = album_name, y = score, color = album_name)) +
 ```
 
 **Part 2: Insights from Visualization 2**
+It can be seen that the four albums sometimes display noticeable features in the variables that sets it apart from the others, while other times there does not seem to be a clear difference between them. For example, Taylor's Swift's best album, "folklore", has considerably higher acousticness in general compared to the others. We can also notice that the 2 worst albums is generaly louder and has more energy than the 2 best albums. However, there does not seem to be any noticeable difference in tempo distribution among the songs in each of the four albums.
 
+As for the summary of the overall patterns from this analysis and visualization, this scatter chart shows that while some variables has a visible correlation to whether an album is perceived as good or bad, there are also other variables that might not have any effect on them.
 
-### Visualization 2 (Ray's Version)
-
-**Part 1: Bar Plot**
-```{r}
-best_albums = c("folklore", "Red (Taylor's Version)")
-worst_albums = c("reputation", "Taylor Swift")
-
-qn2 = df %>%
-  filter(album_name == best_albums[1]
-         | album_name == best_albums[2]
-         | album_name == worst_albums[1]
-         | album_name == worst_albums[2]) %>%
-  group_by(album_name) %>%
-  summarize(danceability = mean(danceability), energy = mean(energy),
-            loudness_14_LUFS = mean(loudness) + 14, speechiness = mean(speechiness),
-            acousticness = mean(acousticness), liveness = mean(liveness),
-            valence = mean(valence), tempo = mean(tempo)) %>%
-  gather(key = "feature",
-         value = "mean_values",
-         danceability:tempo)
-
-ggplot(qn2, aes(x = album_name, y = mean_values, fill = album_name)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ feature, scales = "free") + 
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  ) +
-  ggtitle( "Values of features from albums") +
-  scale_fill_viridis(discrete = TRUE)
-```
-
-**Part 2: Insights from Visualization 2**
 
 ## Section 3
 
 ### Visualization 3: 
+*Density plot that visualizes the distribution of valence in albums from the Top 2 Albums (based on metacritic and user scores) and a specific album (in this case, Taylor Swift)*
+
 **Part 1: Density Plot**
 
-Density plot that visualizes the distribution of energy in albums from the Top 2 Albums (based on metacritic and user scores) and a specific album (in this case, Taylor Swift)
 ```{r}
 top_2_albums <- c("Red (Taylor's Version)", "folklore")
 
@@ -293,19 +222,18 @@ best_album_data <- df %>%
   filter(album_name %in% top_2_albums) %>%
   mutate(label = "Top 2 Albums")
 
-album_to_compare <- "1989"
-selected_album_data <- df %>%
-  filter(album_name == album_to_compare) %>%
-  mutate(label = album_to_compare)
+other_album_data <- df %>%
+  filter(!(album_name %in% top_2_albums)) %>%
+  mutate(label = "All Other Albums")
 
-data_to_plot <- bind_rows(best_album_data, selected_album_data)
+data_to_plot <- bind_rows(best_album_data, other_album_data)
 
 ggplot(data_to_plot, 
-       aes(x = energy, fill = label, color = label)) +
+       aes(x = valence, fill = label, color = label)) +
   geom_density(alpha = 0.5) +
-  labs(title = paste("Energy Distribution of Top 2 Albums VS", album_to_compare, "Album"),
-       x = "Energy",
-       y = "Density") +
+  labs(title = paste("Valence Distribution of Top 2 Albums VS Other Albums"),
+       x = "Valence",
+       y = "Density (Across Album)") +
   theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5),
@@ -314,3 +242,4 @@ ggplot(data_to_plot,
 ```
 
 **Part 2: Insights from Visualization 3**
+This graphs shows the distribution of `valence` across the top two best albums (turquoise) and the other albums (red). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
