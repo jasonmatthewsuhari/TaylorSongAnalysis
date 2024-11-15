@@ -238,8 +238,12 @@ ggplot(data_to_plot,
   theme(
     plot.title = element_text(hjust = 0.5),
     legend.position = "bottom"
-    )
+    ) +
+  scale_fill_viridis_d(option = "viridis") +
+  scale_color_viridis_d(option = "viridis")
 ```
 
 **Part 2: Insights from Visualization 3**
-This graphs shows the distribution of `valence` across the top two best albums (turquoise) and the other albums (red). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
+This graph shows the distribution of `valence` across the top two best albums (yellow) and the other albums (purple). The density curves reveal that the best albums, decided by a combination of Metacritic and user score, tend to have a higher density of mid to high valence songs, indicating slightly more positive tones. Meanwhile, the aggregate of all other albums show a spread of low to mid valence. This suggests that despite Taylor Swift's reputation of only singing about her exes or her breakups, her positive-sounding albums are better received by fans and critics alike.
+
+In summary, this graph shows the distribution of `valence`, revealing that the best albums have a higher valence / scale of positivity compared to her other albums. While some other factors may come into play when it comes to one of her fans or a critic deciding whether or not her song is good, it seems that the general public are better able to connect themselves to the album through positive songs. 
