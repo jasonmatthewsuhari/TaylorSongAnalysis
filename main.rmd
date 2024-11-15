@@ -1,6 +1,6 @@
 ---
 title: "Taylor Swift Song Analysis: What Makes An Album Good Or Bad, Based On The Features Of Their Songs?"
-author: "Arvind Ramakrishnan (A0253523L), Jason Matthew Suhari (A0286652U), Jason Ray, Tay Jia Jun Jeremy"
+author: "Arvind Ramakrishnan (A0253523L), Jason Matthew Suhari (A0286652U), Jason Ray, Tay Jia Jun Jeremy (A0277620A)"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -41,11 +41,11 @@ The [dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/20
 **What are the key differences, in terms of musical features, between the songs of a highly rated album and relatively lower rated album of Taylor Swift?**
 
 ### Sub-Questions
-1.) How does the metacritic score and user score differ for each Taylor Swift album and what are the good and bad albums?
+1.) The good and bad albums of Taylor Swift based on metacritic score and user score. 
 
-2.) Insert sub-question #2 here
+2.) The song features breakdown for Talyor Swift Top 2 and Bottom 2 Album.
 
-3.) Insert sub-question #3 here
+3.) The distribution of valence in albums from the Top 2 Albums (based on metacritic and user scores) and a specific album (in this case, Taylor Swift).
 
 ## Data Parsing and Initialization
 
